@@ -1,27 +1,64 @@
-sudo: required
-dist: xenial
+sudo: true
+
+dist: trusty
+
 group: edge
 
-language: node_js
-node_js: stable
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+      - screen
 
-before_cache:
-  - rm -rf $HOME/.cache/electron-builder/wine
+language: node_js
+
+node_js:
+- '6.10.1'
 
 cache:
-  directories:
-    - node_modules
-    - $HOME/.cache/electron
-    - $HOME/.cache/electron-builder
+    directories:
+      - $HOME/www/lib
+      - $HOME/node_modules
+
+before_install:
+- npm cache clean
+- npm install -g cordova ionic@2.2.3
+- npm install
+- npm install -g bower
+- npm install -g gulp
+- bower install
+
+addons:
+  sauce_connect: true
 
 before_script:
-  - npm install -g @angular/cli
-  - npm i npm@latest -g
-  - gulp
+- gulp
+- screen -dm ionic serve -b -a -d --nogulp --address localhost --port 8100 # We use screen here because nohup does not work with ionic serve.
+- sleep 15  # Wait a lot here, selenium and gulp:before task and ionic must be running.
 
-script:
-  - npm run build
+matrix:
+  fast_finish: false
 
-after_success:
-  - chmod +x scripts/aot.sh
-  - scripts/aot.sh
+  include:
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-1.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-2.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-config.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-course.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-resource.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-user.js
+
+    - script:
+      - ./node_modules/protractor/bin/protractor e2e/sauce/browser/protractor-sauce-browser-activities-3.js
