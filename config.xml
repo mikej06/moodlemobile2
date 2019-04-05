@@ -126,3 +126,4 @@
   </platform>
   <icon src="resources/ios/icon/icon-small@3x.png"/>
 </widget>
+<plugin name="WebIntent" value="com.borismus.webintent.WebIntent" />
