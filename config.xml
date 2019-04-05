@@ -127,3 +127,4 @@
   <icon src="resources/ios/icon/icon-small@3x.png"/>
 </widget>
 <plugin name="WebIntent" value="com.borismus.webintent.WebIntent" />
+<gap:plugin name="de.appplant.cordova.plugin.local-notification" />
